@@ -1,17 +1,19 @@
 ; -------------------------------------------------------------------------------- ;
 ;  Core Keeper Auto Fish AutoHotKey script
-;  Version: 0.0.3
-;  Last Updated: 2022/04/12
+;  Version: 0.0.5
+;  Last Updated: 2022/11/15
 ;  Author: Tim Martin
+;  Editor: qwertzuiopii
 ; -------------------------------------------------------------------------------- ;
 
 toggle := 0
 baitSkill := -1
+goldfish := -1
 isOpen := 0
 delay := 12400
 time := A_TickCount
 
-MsgBox, 0, % "Core Keeper Auto Fish", % "Welcome to Core Keeper Auto Fish`n`nThis program automatically fishes for you in the game Core Keeper so that you can afk fish while away from your computer.`n`nTo use this program stand with a water block next to you, on your RIGHT.`n`nEnsure you are holding a fishing rod (it is advised to have at least 5 other fishing rods in your inventory).`n`nThen press Ctrl + Shift + f and input your ""Improved Bait"" skill level to automatically fish.`n`nYou can press Ctrl + Shift + f to stop automatically fishing at any time."
+MsgBox, 0, % "Core Keeper Auto Fish", % "Welcome to Core Keeper Auto Fish`n`nThis program automatically fishes for you in the game Core Keeper so that you can afk fish while away from your computer.`n`nTo use this program stand with a water block next to you, on your RIGHT.`n`nEnsure you are holding a fishing rod (it is advised to have at least 5 other fishing rods in your inventory).`n`nThen press Ctrl + Shift + f and input your ""Improved Bait"" skill level and nubmer of equipped ""Goldfish Rings"" to automatically fish.`n`nYou can press Ctrl + Shift + f to stop automatically fishing at any time."
 
 OK:
 If isOpen
@@ -22,7 +24,7 @@ Loop {
     While toggle {
         If (isOpen and handleSubmit) {
             Gui, Submit
-            delay := Floor(12400 * (1 - (baitSkill * 0.05)))
+            delay := Floor(12400 * (1 - (baitSkill * 0.05) - (goldfish * 0.13)))
             handleSubmit := 0
             isOpen := 0
         }
@@ -42,6 +44,16 @@ Loop {
                     Gui, Add, Text,, Select your "Improved Bait" skill level.
                     Gui, Add, Edit
                     Gui, Add, UpDown, vbaitSkill Range0-5, 0
+                    Gui, Add, Button, Default gOK, OK
+                    Gui, Show
+                    isOpen := 1
+				}
+				
+				While (goldfish < 0 and !isOpen) {
+                    Gui, New
+                    Gui, Add, Text,, Select your number of equipped "Goldfish Rings".
+                    Gui, Add, Edit
+                    Gui, Add, UpDown, vgoldfish Range0-2, 0
                     Gui, Add, Button, Default gOK, OK
                     Gui, Show
                     isOpen := 1
@@ -113,12 +125,14 @@ Loop {
                     continue
                 }
             } else {
+				if (baitSkill >= 0 and goldfish >= 0) {
                 MsgBox, 4, % "Core Keeper Auto Fish - Core Keeper not active", % "You cannot fish if Core Keeper is not the active window.`n`nWould you like to make Core Keeper the active window?"
                 IfMsgBox, Yes
                     WinActivate
                 else IfMsgBox, No
                     toggle := 0
                 continue
+				}
             }
         } else {
             MsgBox, 0, % "Core Keeper Auto Fish - Core Keeper not running", % "Core Keeper is not runing.`n`nPlease run Core Keeper before attempting to fish."
